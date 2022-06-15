@@ -14,6 +14,27 @@ import 'package:dart_ds_algo/util/test_util.dart' as util;
 void exec() {
   print('test_01: ${util.assertify(countingChange(4, [1, 2, 3]), 4)}');
   print('test_02: ${util.assertify(countingChange(8, [1, 2, 3]), 10)}');
+  print('test_03: ${util.assertify(countingChange(24, [5, 7, 3]), 5)}');
+  print('test_04: ${util.assertify(countingChange(13, [2, 6, 12, 10]), 0)}');
+  print(
+      'test_05: ${util.assertify(countingChange(512, [1, 5, 10, 25]), 20119)}');
+  print('test_06: ${util.assertify(countingChange(1000, [
+            1,
+            5,
+            10,
+            25
+          ]), 142511)}');
+  print('test_07: ${util.assertify(countingChange(240, [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]), 1525987916)}');
 }
 
 int countingChange(int amount, List<int> coins,
