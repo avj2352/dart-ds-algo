@@ -10,7 +10,15 @@ import 'dart:math';
 * Space: O(n) -> because of memoization
 */
 void exec() {
-  print('test_01: ${util.assertify(minChange(8, [1, 5, 4, 12]), 2)}');
+	print('test_01: ${util.assertify(minChange(8, [1, 5, 4, 12]), 2)}');
+	print('test_02: ${util.assertify(minChange(13, [1, 9, 5, 14, 30]), 5)}');
+	print('test_03: ${util.assertify(minChange(23, [2, 5, 7]), 4)}');
+	print('test_04: ${util.assertify(minChange(102, [1, 5, 10, 25]), 6)}');
+	print('test_05: ${util.assertify(minChange(200, [1, 5, 10, 25]), 8)}');
+	print('test_06: ${util.assertify(minChange(2017, [4, 2, 10]), -1)}');
+	print('test_07: ${util.assertify(minChange(271, [10, 8, 265, 24]), -1)}');
+	print('test_08: ${util.assertify(minChange(0, [4, 2, 10]), 0)}');
+	print('test_09: ${util.assertify(minChange(0, []), 0)}');
 }
 
 int minChange(int amount, List<int> coins) {
