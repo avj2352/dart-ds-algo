@@ -204,13 +204,13 @@ The following prints - Hello World, includes a module from lib folder & prints t
 import 'package:excercise/excercise.dart' as excercise;
 
 void main(List<String> arguments) {
-	print('Hello world: ${excercise.calculate()}!');
-	try {
-		int result = arguments.fold<int>(0, (prev, el)=>prev + int.parse(el));
-		print('Argument sum is ${result}');
-	} catch (err) {
-		print('Atleast one argument of type int is required');
-	}
+    print('Hello world: ${excercise.calculate()}!');
+    try {
+        int result = arguments.fold<int>(0, (prev, el)=>prev + int.parse(el));
+        print('Argument sum is ${result}');
+    } catch (err) {
+        print('Atleast one argument of type int is required');
+    }
 }
 ```
 
@@ -270,7 +270,6 @@ specify optional parameters.
 > NOTE: since they're positional, the order in which you invoke the params matters!
 
 ```dart
-
 // main
 void main() {
   yell('Hello, World');
@@ -293,7 +292,6 @@ yell(String str, [bool exclaim, String emoji = '']) {
   if (emoji.isNotEmpty) result += emoji;
   print(result);
 }
-
 ```
 
 ## Named Optional Parameters
@@ -323,11 +321,115 @@ yell(String str, {bool exclaim = false, String emoji = ''}) {
   if (emoji.isNotEmpty) result += emoji;
   print(result);
 }
-
 ```
 
+## Performance issues with using Collections (Maps, Sets, Lists, Queues) as Optional Parameters in Dart
 
+Consider the following code, You're using a recursive function and as part to solving overlapping subproblems, you use a Map in Dart to play the role of a memo object. You want the parameter to be optional and as part of the "sound null safety" feature in Dart, it  expects all Collections to be declared "constant"
 
+**Problem**: The problem arises when you try to update the memo map as its declared constant. 
 
+### **Solution #1 (Performance)**:
+
+You can create a copy of the map within your recursive function. BUT this would create multiple copies of the memo object within your stack every time, leading to a Quadratic Space complexity
+
+```dart
+int countingChange(int amount, List<int> coins,
+    [int i = 0, Map memo = const <String, int>{}]) {
+  // memo check - Space complexity O(n^2)
+  Map<String, int> memoMap = Map.from(memo);
+  String pos = '${amount},${i}';
+  if (memoMap.containsKey(pos)) return memo[pos];
+  // base case
+  if (amount == 0) return 1;
+  if (i >= coins.length) return 0;
+  // recursive case
+  int coin = coins[i];
+  int sum = 0;
+  for (int qty = 0; qty * coin <= amount; qty += 1) {
+    int remainder = amount - qty * coin;
+    sum += countingChange(remainder, coins, i + 1, memoMap);
+  }
+  // default
+  memoMap[pos] = sum;
+  return sum;
+}
+```
+
+### **Better Solution**
+
+A Better solution is to declare the memo object / Map in dart's case as a **global** variable. Sure dart will then complain that the key value may be nullable as long as you're sure about your code, you can add an `!` when retrieving the key from your Memo map.
+
+```dart
+import 'package:dart_ds_algo/util/test_util.dart' as util;
+
+/**
+* Counting Change
+* Structy.net https://d22skcv5wmogjc.cloudfront.net/#/details/623f001a15620f00164cf86d
+* Dynamic Programming + Recursion + Memoization
+* Space Time Complexity
+* Time: O(ec) -> where e is the number of elements in the array, c is the height of the tree
+* Space: O(ec)
+* https://stackoverflow.com/questions/69403241/flutterdart-cannot-remove-from-unmodifiable-list
+* Maps with default values: Since your map is immutable you must create a new map 
+* but don't make it an instance if the original just make a copy.
+*/
+void exec() {
+  print('test_01: ${util.assertify(countingChange(4, [1, 2, 3]), 4)}');
+  print('test_02: ${util.assertify(countingChange(8, [1, 2, 3]), 10)}');
+  print('test_03: ${util.assertify(countingChange(24, [5, 7, 3]), 5)}');
+  print('test_04: ${util.assertify(countingChange(13, [2, 6, 12, 10]), 0)}');
+  print(
+      'test_05: ${util.assertify(countingChange(512, [1, 5, 10, 25]), 20119)}');
+  print('test_06: ${util.assertify(countingChange(1000, [
+            1,
+            5,
+            10,
+            25
+          ]), 142511)}');
+  print('test_07: ${util.assertify(countingChange(240, [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9
+          ]), 1525987916)}');
+}
+
+int countingChange(int amount, List<int> coins) {
+  // much better performance this way!
+  Map<String, int> memo = new Map<String, int>();
+  return dfs(amount, coins, memo);
+}
+
+int dfs(int amount, List<int> coins, Map<String, int> memo, [int i = 0]) {
+  // memo check
+  String pos = '${amount},${i}';
+  if (memo.containsKey(pos)) return memo[pos]!;
+  // base case
+  if (amount == 0) return 1;
+  if (i >= coins.length) return 0;
+  // recursive case
+  int coin = coins[i];
+  int sum = 0;
+  for (int qty = 0; qty * coin <= amount; qty += 1) {
+    int remainder = amount - qty * coin;
+    sum += dfs(remainder, coins, memo, i + 1);
+  }
+  // default
+  memo[pos] = sum;
+  return sum;
+}
+```
+
+## Conclusion
+
+All I am saying is **Recursive functions** + **collections as optional arguments** don't go very well hand-in-hand in dart programming.
+
+---
 
 
