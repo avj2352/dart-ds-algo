@@ -19,6 +19,61 @@ I will try to document the nuances in my app - [Tech Quest](https://tiny.one/tec
 - [Structy.net](https://structy.net)
 - [Algo Monster](https://algo.monster/)
 - [Leetcode](https://leetcode.com)
+- [Dart Async Generators](https://zaiste.net/programming/dart/howtos/use-generators-dart/)
 
 ## FAQ Troubleshooting
 - [Collections as optional arguments in Dart](https://stackoverflow.com/questions/69403241/flutterdart-cannot-remove-from-unmodifiable-list)
+
+
+## Dart Async Generators
+
+In Dart, generators are functions that **generate a sequence of values on-demand (lazy evaluation).** 
+
+Dart's generators can be **synchronous** and **asynchronous**. 
+
+Synchronous generators return an Iterable while asynchronous ones return a Stream. Asynchronous generators allow for asynchronous operations in their bodies (i.e. operations invoked with the await keyword), something that cannot be done in synchronous ones. 
+
+Generators in Dart can also be used recursively.
+
+### Synchronous Generators
+
+- Synchronous generators return an `Iterable`
+
+- Generators in Dart can also be used recursively.
+
+- You can create a synchronous generator from a function using the `sync*` keyword:
+
+```dart
+Iterable<int> range(int num) sync* {
+  while (num > 0) {
+    yield --num;
+  }
+}
+
+void main() {
+  for (int value in range(10)) {
+    print(value);
+  }
+}
+```
+
+### Asynchronous Generators
+
+- You can create a asynchronous generator from a function using the `async*` keyword:
+
+- Asynchronous generators allow for asynchronous operations in their bodies (i.e. operations invoked with the `await` keyword).
+
+```dart
+Stream<int> range(int num) async* {
+  while (num > 0) {
+    yield --num;
+  }
+}
+
+void main() {
+  range(10).listen((value) => print(value));
+}
+```
+---
+
+
